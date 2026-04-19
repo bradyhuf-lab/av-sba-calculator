@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Acquisition Vault — SBA Loan Approval Calculator</title>
+<meta name="description" content="Pre-qualify your business acquisition for SBA 7(a) financing in 60 seconds. Run the numbers before you call a lender." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #0D1B2A;
+    --navy2: #152234;
+    --navy3: #1E2F42;
+    --red: #C0392B;
+    --red2: #E04535;
+    --gold: #E8A020;
+    --white: #F4F4F2;
+    --gray: #8A9BB0;
+    --light: #C8D6E5;
+    --line: rgba(200, 214, 229, 0.12);
+    --green: #3EAE7B;
+    --amber: #E8A020;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Barlow, system-ui, -apple-system, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Bebas Neue', Impact, sans-serif; font-weight: 400; letter-spacing: 0.02em; margin: 0; color: var(--white); }
+  a { color: var(--light); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 56px; gap: 16px; }
+  header img.logo { height: 44px; display: block; }
+  .kicker {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 7vw, 82px);
+    line-height: 0.95;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .hero h1 .accent { color: var(--red); }
+  .hero p.sub {
+    font-size: 18px;
+    color: var(--light);
+    max-width: 520px;
+    margin: 0 0 48px 0;
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--navy2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 32px;
+  }
+  .card + .card { margin-top: 20px; }
+  .card h3 {
+    font-size: 26px;
+    color: var(--gold);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .field { display: flex; flex-direction: column; margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--light);
+    margin-bottom: 8px;
+  }
+  input[type="number"], input[type="email"], input[type="text"], input[type="tel"], select {
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--navy3);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+  input:focus, select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
+  }
+  input::placeholder { color: var(--gray); }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+
+  .hint { font-size: 12px; color: var(--gray); margin-top: 6px; line-height: 1.4; }
+
+  .btn {
+    appearance: none;
+    border: 2px solid var(--red);
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 26px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+    width: 100%;
+  }
+  .btn:hover { background: var(--red2); border-color: var(--red2); }
+  .btn:active { transform: translateY(1px); }
+
+  .micro { font-size: 12px; color: var(--gray); margin-top: 14px; text-align: center; }
+
+  .section-head {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin: 0 0 16px 0;
+  }
+
+  /* Result */
+  .result { display: none; }
+  .badge {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+  }
+  .badge.green { background: rgba(62, 174, 123, 0.18); color: var(--green); border: 1px solid var(--green); }
+  .badge.amber { background: rgba(232, 160, 32, 0.18); color: var(--amber); border: 1px solid var(--amber); }
+  .badge.red { background: rgba(192, 57, 43, 0.2); color: var(--red2); border: 1px solid var(--red); }
+
+  .result h2 { font-size: 42px; margin-bottom: 8px; text-transform: uppercase; line-height: 1.05; }
+  .result .summary { color: var(--light); font-size: 16px; margin-bottom: 24px; font-weight: 300; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+  }
+  .metric .k {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray);
+    font-weight: 700;
+  }
+  .metric .v {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    color: var(--white);
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  ul.flags { list-style: none; padding: 0; margin: 0 0 24px 0; }
+  ul.flags li {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    color: var(--light);
+  }
+  ul.flags li:last-child { border-bottom: 0; }
+  ul.flags .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  ul.flags .dot.ok { background: var(--green); }
+  ul.flags .dot.warn { background: var(--amber); }
+  ul.flags .dot.bad { background: var(--red); }
+  ul.flags .fix {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  ul.flags .fix::before {
+    content: 'Move to green: ';
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+
+  .cta-final {
+    background: var(--red);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 32px;
+    margin-top: 24px;
+    text-align: center;
+  }
+  .cta-final h3 {
+    color: var(--white);
+    font-size: 34px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .cta-final p {
+    color: rgba(255,255,255,0.85);
+    font-size: 15px;
+    margin: 0 0 24px 0;
+    font-weight: 300;
+  }
+  .cta-final a.btn-gold {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 4px;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cta-final a.btn-gold:hover { filter: brightness(1.08); }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+  footer a { color: var(--gray); text-decoration: none; }
+  footer a:hover { color: var(--light); }
+  footer .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  footer .disclaimer { font-size: 11px; color: var(--gray); }
+  footer .disclaimer p { margin: 0 0 8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo.svg" alt="Acquisition Vault" class="logo" />
+    <div class="kicker">SBA 7(a) Deal Pre-Qualifier</div>
+  </header>
+
+  <section class="hero">
+    <h1>Will your deal actually <span class="accent">get funded?</span></h1>
+    <p class="sub">Run the same approval checks SBA lenders run. Sixty seconds, no application fee, no credit pull.</p>
+  </section>
+
+  <!-- Step 1: Inputs -->
+  <section class="card" id="step-inputs">
+    <div class="section-head">The Business</div>
+    <div class="row">
+      <div class="field">
+        <label for="purchase">Purchase price</label>
+        <input type="number" id="purchase" placeholder="$2,000,000" />
+      </div>
+      <div class="field">
+        <label for="sde">Annual SDE (cash flow)</label>
+        <input type="number" id="sde" placeholder="$500,000" />
+        <div class="hint">Seller's Discretionary Earnings — net income + owner salary + personal add-backs.</div>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="industry">Industry</label>
+        <select id="industry">
+          <option value="home_services">Home Services (HVAC, plumbing, electrical, landscaping)</option>
+          <option value="healthcare">Healthcare (medical, dental, vet, home health)</option>
+          <option value="commercial">Commercial Services (janitorial, logistics, fleet)</option>
+          <option value="franchise">Franchise (SBA-approved directory)</option>
+          <option value="manufacturing">Manufacturing / Distribution</option>
+          <option value="professional">Professional Services (accounting, law, insurance)</option>
+          <option value="retail">Retail / E-Commerce</option>
+          <option value="restaurant">Restaurant / Food Service</option>
+          <option value="other">Other / Trendy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="yearsProfitable">Years the business has been profitable</label>
+        <select id="yearsProfitable">
+          <option value="5">5 or more</option>
+          <option value="4">4</option>
+          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="1">1</option>
+          <option value="0">Less than 1</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="customerConc">Largest customer = % of revenue</label>
+        <select id="customerConc">
+          <option value="low">Under 10%</option>
+          <option value="med">10–20%</option>
+          <option value="high">Over 20%</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">The Buyer (You)</div>
+    <div class="row">
+      <div class="field">
+        <label for="credit">Personal credit score</label>
+        <select id="credit">
+          <option value="high">720+</option>
+          <option value="mid">680 – 719</option>
+          <option value="low">640 – 679</option>
+          <option value="bad">Below 640</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="w2">Current W-2 income (annual)</label>
+        <input type="number" id="w2" placeholder="$150,000" />
+      </div>
+      <div class="field">
+        <label for="savings">Liquid savings available</label>
+        <input type="number" id="savings" placeholder="$250,000" />
+        <div class="hint">Cash, brokerage, and retirement (retirement counts at ~60–80%).</div>
+      </div>
+      <div class="field">
+        <label for="existingDebt">Existing monthly debt payments</label>
+        <input type="number" id="existingDebt" placeholder="$2,500" />
+        <div class="hint">Mortgage, car, credit cards, student loans — what you already pay monthly.</div>
+      </div>
+      <div class="field">
+        <label for="expMgmt">Management experience</label>
+        <select id="expMgmt">
+          <option value="10">10 or more years</option>
+          <option value="5">5 – 9 years</option>
+          <option value="1">1 – 4 years</option>
+          <option value="0">None</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="industryMatch">Experience in this industry</label>
+        <select id="industryMatch">
+          <option value="direct">Yes — same industry</option>
+          <option value="related">Related industry / transferable</option>
+          <option value="none">Different industry</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="operator">Operating partner staying on after close</label>
+        <select id="operator">
+          <option value="key_emp">Yes — key employee or GM staying on</option>
+          <option value="seller">Yes — seller staying ≤ 12 months as consultant</option>
+          <option value="none">No operating partner</option>
+        </select>
+        <div class="hint">Important if you're coming from a different industry.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">The Capital Stack</div>
+    <div class="row">
+      <div class="field">
+        <label for="downPayment">Your cash down payment</label>
+        <input type="number" id="downPayment" placeholder="$200,000" />
+      </div>
+      <div class="field">
+        <label for="sellerFinance">Seller financing on the table</label>
+        <input type="number" id="sellerFinance" placeholder="$100,000" />
+        <div class="hint">If the seller has agreed to carry a note. Enter 0 if no seller financing.</div>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="outsideCapital">Outside investor capital (optional)</label>
+        <input type="number" id="outsideCapital" placeholder="$0" />
+        <div class="hint">From a partner or HNW investor. Must be treated as equity, not debt.</div>
+      </div>
+    </div>
+    <div style="margin-top: 28px;">
+      <button class="btn" id="checkDeal">Check my deal</button>
+      <div class="micro">Instant result. No credit pull. No application fee.</div>
+    </div>
+  </section>
+
+  <!-- Step 2: Lead capture -->
+  <section class="card" id="step-email" style="display:none;">
+    <h3 style="color: var(--gold); font-size: 26px; margin-bottom: 10px;">One more step to see your result</h3>
+    <p style="color: var(--light); font-size: 15px; margin: 0 0 24px 0;">Quick details so we can send the breakdown and follow up if you want to talk through the deal.</p>
+    <div class="row">
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" autocomplete="given-name" />
+      </div>
+      <div class="field">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" autocomplete="family-name" />
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@email.com" autocomplete="email" />
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="phone">Phone (optional)</label>
+        <input type="tel" id="phone" placeholder="(555) 555-5555" autocomplete="tel" />
+        <div class="hint">By entering a phone number you agree to receive SMS from Acquisition Vault. Msg &amp; data rates may apply. Reply STOP to opt out.</div>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="timeline">Where are you in the process?</label>
+        <select id="timeline">
+          <option value="loi_signed">LOI signed — need financing now</option>
+          <option value="in_talks">In talks with a seller</option>
+          <option value="searching">Actively searching for a deal</option>
+          <option value="exploring">Just exploring the model</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top: 8px;">
+      <button class="btn" id="showResult">See my scorecard</button>
+      <div class="micro">No spam. No sharing. Unsubscribe anytime.</div>
+    </div>
+  </section>
+
+  <!-- Step 3: Result -->
+  <section class="result" id="step-result">
+    <div class="card">
+      <span class="badge" id="resultBadge">—</span>
+      <h2 id="resultTitle">—</h2>
+      <p class="summary" id="resultSummary">—</p>
+
+      <div class="metrics">
+        <div class="metric"><div class="k" id="k1">—</div><div class="v" id="v1">—</div></div>
+        <div class="metric"><div class="k" id="k2">—</div><div class="v" id="v2">—</div></div>
+        <div class="metric"><div class="k" id="k3">—</div><div class="v" id="v3">—</div></div>
+        <div class="metric"><div class="k" id="k4">—</div><div class="v" id="v4">—</div></div>
+      </div>
+
+      <ul class="flags" id="flagList"></ul>
+    </div>
+
+    <div class="cta-final">
+      <h3>Ready to talk the deal through?</h3>
+      <p>Book a free 30-minute strategy call with Josh. We'll review your numbers, match you with a Preferred SBA lender, and build the capital stack that actually gets approved.</p>
+      <a class="btn-gold" id="bookCall" href="https://acquisitionvault.com/#contact" target="_blank" rel="noopener">Book a free strategy call</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="top">
+      <div>Acquisition Vault · Buy-Side SBA Advisory</div>
+      <div><a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a></div>
+    </div>
+    <div class="disclaimer">
+      <p>This calculator is for informational purposes only and does not constitute a loan commitment, guarantee of approval, or the practice of law or accounting. Actual SBA approval depends on full underwriting by an SBA Preferred Lender, verified financials, credit report review, Quality of Earnings analysis, and current SBA SOP guidelines. Results shown are estimates based on the inputs provided and publicly stated SBA 7(a) program guidelines — actual terms and approvals may vary.</p>
+      <p>Acquisition Vault is a buy-side advisory firm. We are not an SBA lender, broker-dealer, law firm, or accounting firm. We connect qualified buyers with SBA Preferred Lenders and coordinate deal preparation services. Nothing on this page constitutes investment advice, legal advice, or tax advice.</p>
+      <p>By entering a phone number you consent to receive SMS communication from Acquisition Vault regarding your inquiry. Message and data rates may apply. Message frequency varies. Reply STOP to opt out or HELP for help. Consent is not a condition of any service. See our <a href="https://acquisitionvault.com" target="_blank" rel="noopener">privacy policy</a>.</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  // Required-field check before email gate
+  const required = ['purchase', 'sde', 'w2', 'savings', 'downPayment'];
+
+  $('checkDeal').addEventListener('click', () => {
+    const missing = required.some((id) => !Number($(id).value));
+    if (missing) {
+      alert('Fill in the dollar-amount fields to continue.');
+      return;
+    }
+    $('step-inputs').style.display = 'none';
+    document.querySelectorAll('.card').forEach((c) => {
+      if (c !== $('step-email') && c !== $('step-inputs')) c.style.display = 'none';
+    });
+    $('step-email').style.display = 'block';
+    $('step-email').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Lead capture endpoint — swap for the real CRM webhook once configured.
+  // Formsubmit forwards submissions to the destination email with zero setup.
+  // First submission requires one-time confirmation click in the inbox.
+  const LEAD_ENDPOINT = 'https://formsubmit.co/ajax/bradyhuf@gmail.com';
+
+  $('showResult').addEventListener('click', () => {
+    const email = $('email').value.trim();
+    const firstName = $('firstName').value.trim();
+    const lastName = $('lastName').value.trim();
+    const phone = $('phone').value.trim();
+    const timeline = $('timeline').value;
+
+    if (!firstName || !lastName) { alert('Please enter your first and last name.'); return; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email to see your result.'); return; }
+
+    const lead = collectLeadPayload({ firstName, lastName, email, phone, timeline });
+
+    try {
+      fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(lead),
+      }).catch(() => {});
+    } catch (e) {}
+    try {
+      const stored = JSON.parse(localStorage.getItem('av_leads') || '[]');
+      stored.push(lead);
+      localStorage.setItem('av_leads', JSON.stringify(stored));
+    } catch (e) {}
+
+    runCalculator();
+    $('step-email').style.display = 'none';
+    $('step-result').style.display = 'block';
+    $('step-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function collectLeadPayload({ firstName, lastName, email, phone, timeline }) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utm = {
+      source: urlParams.get('utm_source') || '',
+      medium: urlParams.get('utm_medium') || '',
+      campaign: urlParams.get('utm_campaign') || '',
+      content: urlParams.get('utm_content') || '',
+    };
+    const inputs = {};
+    ['purchase','sde','industry','yearsProfitable','customerConc',
+     'credit','w2','savings','existingDebt','expMgmt','industryMatch','operator',
+     'downPayment','sellerFinance','outsideCapital'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) inputs[id] = el.value;
+    });
+    return {
+      _subject: 'New AV SBA Calculator lead: ' + firstName + ' ' + lastName,
+      firstName, lastName, email, phone, timeline,
+      inputs, utm,
+      submittedAt: new Date().toISOString(),
+      pageUrl: window.location.href,
+    };
+  }
+
+  const fmt = (n) => '$' + Math.round(n).toLocaleString();
+  const pct = (n) => (n * 100).toFixed(1) + '%';
+
+  // ---------- SBA 7(a) approval calculator ----------
+  // Numbers sourced from Josh Kim's own scripts on the Acquisition Vault channel:
+  //   - Min FICO ~640, 680+ preferred (Credit Score SBA Loan script)
+  //   - Min equity injection 10%, 20–25% preferred (multiple scripts)
+  //   - DSCR minimum 1.25, some lenders 1.35 (How To Value A Business, Easy Method)
+  //   - W-2 $100K+ baseline, 5+ yrs mgmt exp preferred (Easy Method script)
+  //   - SBA 7(a) cap $5M, loans 7–10 years (2026 SBA rules script)
+  //   - Business stable 2+ years (Best Types Of Businesses to Buy)
+  //   - Debt-to-income ceiling ~40–45% (10 SBA Loan Mistakes V2)
+  //   - Liquid reserves ~20–25% of purchase price (10 SBA Loan Mistakes V2)
+  //   - Industry tiers (Best Types Of Businesses to Buy)
+  //   - Seller financing standby rule (Script 1 Seller Financing)
+  // Open questions for Josh: exact DSCR tiers, industry-by-industry LTV, approved franchise list.
+  function runCalculator() {
+    const purchase = Number($('purchase').value);
+    const sde = Number($('sde').value);
+    const industry = $('industry').value;
+    const yearsProfitable = parseInt($('yearsProfitable').value, 10);
+    const customerConc = $('customerConc').value;
+    const credit = $('credit').value;
+    const w2 = Number($('w2').value);
+    const savings = Number($('savings').value);
+    const existingDebt = Number($('existingDebt').value) || 0;
+    const expMgmt = parseInt($('expMgmt').value, 10);
+    const industryMatch = $('industryMatch').value;
+    const operator = $('operator').value;
+    const downPayment = Number($('downPayment').value);
+    const sellerFinance = Number($('sellerFinance').value) || 0;
+    const outsideCapital = Number($('outsideCapital').value) || 0;
+
+    // Working capital reserve: use 10% of purchase as a proxy (Josh says 2–3 months op-ex, lender computes their own).
+    const workingCapitalEstimate = purchase * 0.10;
+    const totalProjectCost = purchase + workingCapitalEstimate;
+
+    // Capital stack.
+    const buyerEquity = downPayment + outsideCapital;
+    const equityPct = buyerEquity / totalProjectCost;
+    const sbaLoanNeeded = Math.max(0, totalProjectCost - buyerEquity - sellerFinance);
+
+    // Debt service estimate. 10-year SBA 7(a) at ~11.5% (prime+2.75 typical for loans >$350K) = ~$13,100/yr per $100K.
+    // Rough formula: annual payment ≈ loan * 0.1405 (10yr at 11.5% fully amortizing).
+    const annualDebtService = sbaLoanNeeded * 0.1405;
+
+    // Adjusted cash flow for DSCR: SDE minus a market-rate operator salary ($80K — Josh's example).
+    const operatorSalary = 80000;
+    const adjustedCashFlow = Math.max(0, sde - operatorSalary);
+    const dscr = annualDebtService > 0 ? adjustedCashFlow / annualDebtService : 999;
+
+    // SDE valuation multiple (sanity check on price).
+    const sdeMultiple = sde > 0 ? purchase / sde : 0;
+
+    // Debt-to-income check.
+    const newMonthlyDebt = annualDebtService / 12;
+    const dti = w2 > 0 ? ((existingDebt * 12) + annualDebtService) / w2 : 999;
+
+    // Post-close liquid reserves (after down payment).
+    const postCloseReserves = savings - downPayment;
+    const reservesPct = postCloseReserves / purchase;
+
+    const flags = [];
+    let verdict = 'green';
+
+    // ---- HARD STOPS ----
+    if (sbaLoanNeeded > 5000000) {
+      flags.push(['bad', 'SBA loan needed is ' + fmt(sbaLoanNeeded) + ' — over the $5M SBA 7(a) cap.',
+        'Either bring more equity/seller financing to get the SBA portion under $5M, or explore alternatives like a pari passu second (SBA 504 + conventional).']);
+      verdict = 'red';
+    }
+
+    if (equityPct < 0.10) {
+      flags.push(['bad', 'Buyer equity at ' + pct(equityPct) + ' of project cost — below the 10% SBA minimum.',
+        'SBA requires at least 10% buyer equity injection. Raise more cash, bring in an investor partner, or structure seller financing on full standby (which can count toward the 10%).']);
+      verdict = 'red';
+    } else if (equityPct < 0.20) {
+      flags.push(['warn', 'Buyer equity at ' + pct(equityPct) + ' — meets the 10% floor but under the 20–25% most lenders prefer.',
+        'Push equity to 20% (' + fmt(totalProjectCost * 0.20) + ') for the best rate and lender options.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', 'Buyer equity at ' + pct(equityPct) + ' — comfortable position with most lenders.']);
+    }
+
+    // DSCR
+    if (sbaLoanNeeded > 0) {
+      if (dscr < 1.25) {
+        flags.push(['bad', 'Projected DSCR of ' + dscr.toFixed(2) + ' — below the 1.25 minimum most SBA lenders require.',
+          'Either lower the purchase price, bring more equity to shrink the loan, negotiate more seller financing on standby, or walk away if the cash flow does not cover the debt.']);
+        verdict = 'red';
+      } else if (dscr < 1.35) {
+        flags.push(['warn', 'Projected DSCR of ' + dscr.toFixed(2) + ' — meets the 1.25 floor but tight. Many lenders prefer 1.35+.',
+          'Negotiate the purchase price down, push more seller financing onto standby, or find a lender with a 1.25 credit box.']);
+        if (verdict === 'green') verdict = 'amber';
+      } else {
+        flags.push(['ok', 'Projected DSCR of ' + dscr.toFixed(2) + ' — strong. Business cash flow covers the debt with margin.']);
+      }
+
+      // Downside scenario: 25% revenue drop → DSCR stays above 1.0?
+      const stressedDSCR = (adjustedCashFlow * 0.75) / annualDebtService;
+      if (stressedDSCR < 1.0) {
+        flags.push(['warn', 'Stress test: if revenue drops 25%, DSCR falls to ' + stressedDSCR.toFixed(2) + ' — below 1.0. Lenders will flag this.',
+          'Build a downside scenario that still covers debt. Often means a lower purchase price or more seller financing.']);
+        if (verdict === 'green') verdict = 'amber';
+      }
+    }
+
+    // Credit
+    if (credit === 'bad') {
+      flags.push(['bad', 'Credit below 640 — most SBA preferred lenders decline at this score.',
+        'Pull your credit report, dispute errors, pay down revolving balances. Credit above 680 opens up most lenders.']);
+      verdict = 'red';
+    } else if (credit === 'low') {
+      flags.push(['warn', 'Credit 640–679 — fundable with the right lender, but some will decline. Expect a rate premium.',
+        'Push credit above 680 for access to the full lender pool and best pricing.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', credit === 'high' ? 'Credit 720+ — top tier for SBA approval.' : 'Credit 680–719 — solid. Most preferred lenders are open.']);
+    }
+
+    // W-2 income
+    if (w2 < 100000) {
+      flags.push(['warn', 'W-2 income of ' + fmt(w2) + ' — below the $100K benchmark lenders like to see as a safety net on the personal guarantee.',
+        'Fundable below $100K if the business cash flow is strong and reserves are solid — but expect more scrutiny.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', 'W-2 income of ' + fmt(w2) + ' — meets the $100K benchmark lenders like to see.']);
+    }
+
+    // Debt-to-income
+    if (w2 > 0 && dti > 0.45) {
+      flags.push(['bad', 'Total debt-to-income of ' + pct(dti) + ' (existing debt + new SBA payment) — above the 40–45% ceiling.',
+        'Pay down personal debt (credit cards, auto loans) before applying. Every $500/mo of payments cleared frees up real DTI headroom.']);
+      verdict = 'red';
+    } else if (w2 > 0 && dti > 0.40) {
+      flags.push(['warn', 'Total debt-to-income of ' + pct(dti) + ' — right at the ceiling most lenders accept.',
+        'Clear any non-essential personal debt before the SBA package goes to underwriting.']);
+      if (verdict === 'green') verdict = 'amber';
+    }
+
+    // Management experience + industry match + operating partner
+    if (expMgmt === 0) {
+      flags.push(['bad', 'No management experience — SBA lenders want to see you can actually run a business.',
+        'Fix this by partnering with someone who has management experience (put them on the operating agreement), or step into a management role at your current job before applying.']);
+      verdict = 'red';
+    } else if (expMgmt < 5) {
+      flags.push(['warn', 'Management experience of 1–4 years — under the 5-year benchmark lenders prefer.',
+        'Not a dealbreaker if the business has a strong operating partner staying on, but be ready to defend your leadership track record.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', expMgmt >= 10 ? '10+ years of management experience — strong.' : '5–9 years of management experience — meets the benchmark.']);
+    }
+
+    if (industryMatch === 'none' && operator === 'none') {
+      flags.push(['bad', 'Different industry with no operating partner staying on — lenders see high execution risk.',
+        'Either hire/retain a key employee or GM who knows the operations (best path), or negotiate seller to stay on ≤ 12 months as a consultant (SBA rule).']);
+      verdict = 'red';
+    } else if (industryMatch === 'none') {
+      flags.push(['warn', 'Different industry — fundable with the operating partner staying on, but expect deeper scrutiny on your transition plan.',
+        'Document how the operating partner continuity is structured (employment agreement, retention bonus, etc.) in the deal package.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', industryMatch === 'direct' ? 'Direct industry experience — strongest position with underwriting.' : 'Related industry experience — transferable skills, lenders will accept.']);
+    }
+
+    // Business-side flags
+    if (yearsProfitable < 2) {
+      flags.push(['bad', 'Business profitable less than 2 years — below the stability threshold SBA lenders want.',
+        'Look for businesses with 2+ years of stable, profitable financials. Anything newer is a startup risk, not an acquisition.']);
+      verdict = 'red';
+    } else if (yearsProfitable < 3) {
+      flags.push(['warn', 'Only 2 years of profitable operating history — meets the floor but underwriting will look hard at trend direction.',
+        'Bring a QoE (Quality of Earnings) report to the table — $2–5K investment that catches anything lenders might flag.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', yearsProfitable + '+ years profitable — solid track record for SBA underwriting.']);
+    }
+
+    // Industry
+    const industryTier = {
+      home_services: 'prime', healthcare: 'prime', commercial: 'prime',
+      franchise: 'good', manufacturing: 'good', professional: 'good',
+      retail: 'cautious', restaurant: 'cautious', other: 'cautious'
+    }[industry];
+    if (industryTier === 'cautious') {
+      flags.push(['warn', 'Industry is a tougher credit box for SBA lenders (restaurants, trendy concepts, retail with tight margins).',
+        'Not a dealbreaker — but lenders will look harder at cash flow and customer stickiness. Expect a slower underwrite.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else if (industryTier === 'prime') {
+      flags.push(['ok', 'Industry is in the sweet spot for SBA approval — recurring demand, sticky customers, lenders are comfortable.']);
+    } else {
+      flags.push(['ok', 'Industry is lender-friendly with standard underwriting.']);
+    }
+
+    // Customer concentration
+    if (customerConc === 'high') {
+      flags.push(['warn', 'Customer concentration over 20% — if that client leaves, DSCR can collapse. Lenders flag this hard.',
+        'Build the downside scenario without that client and show it still clears 1.25 DSCR. Or negotiate the price down to reflect the risk.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else if (customerConc === 'low') {
+      flags.push(['ok', 'Customer base is diversified — no concentration risk.']);
+    }
+
+    // Post-close reserves
+    if (postCloseReserves < 0) {
+      flags.push(['bad', 'Down payment exceeds your liquid savings — you would have zero reserves at closing.',
+        'SBA lenders want you to keep reserves after closing. Raise more capital, shrink the down payment, or walk.']);
+      verdict = 'red';
+    } else if (reservesPct < 0.10) {
+      flags.push(['warn', 'Post-close liquid reserves of ' + fmt(postCloseReserves) + ' (' + pct(reservesPct) + ' of purchase) — thin cushion.',
+        'Aim for 20–25% of purchase price in reserves after closing. Retirement accounts count at 60–80% of balance toward this.']);
+      if (verdict === 'green') verdict = 'amber';
+    } else {
+      flags.push(['ok', 'Post-close reserves of ' + fmt(postCloseReserves) + ' (' + pct(reservesPct) + ' of purchase) — healthy position.']);
+    }
+
+    // SDE multiple sanity check
+    if (sdeMultiple > 0) {
+      if (sdeMultiple > 4.5) {
+        flags.push(['warn', 'Purchase price is ' + sdeMultiple.toFixed(1) + 'x SDE — high for most small-business acquisitions (typical: 2–4x).',
+          'Either negotiate the price down, get a QoE to verify the earnings support the multiple, or verify the business has premium strategic value (recurring revenue, large customer base, etc.).']);
+        if (verdict === 'green') verdict = 'amber';
+      } else if (sdeMultiple < 1.5 && sde > 0) {
+        flags.push(['ok', 'Purchase at ' + sdeMultiple.toFixed(1) + 'x SDE — attractive on price. Make sure the low multiple is not hiding concentration risk or declining revenue.']);
+      } else {
+        flags.push(['ok', 'Purchase at ' + sdeMultiple.toFixed(1) + 'x SDE — in the normal range for small-business acquisitions.']);
+      }
+    }
+
+    // Render
+    renderResult({
+      verdict,
+      metrics: [
+        ['SBA loan needed', fmt(sbaLoanNeeded)],
+        ['Projected DSCR', dscr < 100 ? dscr.toFixed(2) : '—'],
+        ['Your equity %', pct(equityPct)],
+        ['SDE multiple', sdeMultiple > 0 ? sdeMultiple.toFixed(1) + 'x' : '—'],
+      ],
+      flags,
+    });
+  }
+
+  function renderResult({ verdict, metrics, flags }) {
+    const badge = $('resultBadge');
+    const title = $('resultTitle');
+    const summary = $('resultSummary');
+
+    if (verdict === 'green') {
+      badge.className = 'badge green';
+      badge.textContent = 'Likely Approved';
+      title.textContent = 'Your deal fits the SBA box.';
+      summary.textContent = 'On paper, this is the kind of file a preferred SBA lender moves quickly on. Here is what to expect.';
+    } else if (verdict === 'amber') {
+      badge.className = 'badge amber';
+      badge.textContent = 'Fundable With Work';
+      title.textContent = 'Your deal is workable — with a few adjustments.';
+      summary.textContent = 'There are items below that will shape your approval and your terms. None are dealbreakers on their own.';
+    } else {
+      badge.className = 'badge red';
+      badge.textContent = 'Needs Restructure';
+      title.textContent = 'As-is, this deal will struggle to clear SBA underwriting.';
+      summary.textContent = 'One or more items below are hard stops for most SBA lenders. Talk to a buy-side advisor before you submit.';
+    }
+
+    metrics.forEach(([k, v], i) => {
+      $('k' + (i + 1)).textContent = k;
+      $('v' + (i + 1)).textContent = v;
+    });
+
+    const list = $('flagList');
+    list.innerHTML = '';
+    flags.forEach((flag) => {
+      const [level, text, fix] = flag;
+      const li = document.createElement('li');
+      const dotClass = level === 'ok' ? 'ok' : level === 'warn' ? 'warn' : 'bad';
+      let body = escapeHtml(text);
+      if (fix) body += '<div class="fix">' + escapeHtml(fix) + '</div>';
+      li.innerHTML = '<span class="dot ' + dotClass + '"></span><span>' + body + '</span>';
+      list.appendChild(li);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>
