@@ -39,7 +39,23 @@
   .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
 
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 56px; gap: 16px; }
-  header img.logo { height: 44px; display: block; }
+  .wordmark {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .wordmark .accent { color: var(--red); }
+  .wordmark .rule {
+    width: 28px;
+    height: 3px;
+    background: var(--gold);
+    display: inline-block;
+  }
   .kicker {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 12px;
@@ -282,7 +298,7 @@
 <body>
 <div class="wrap">
   <header>
-    <img src="logo.svg" alt="Acquisition Vault" class="logo" />
+    <div class="wordmark">ACQUISITION<span class="rule"></span><span class="accent">VAULT</span></div>
     <div class="kicker">SBA 7(a) Deal Pre-Qualifier</div>
   </header>
 
@@ -315,10 +331,9 @@
           <option value="professional">Professional Services (accounting, law, insurance)</option>
           <option value="retail">Retail / E-Commerce</option>
           <option value="restaurant">Restaurant / Food Service</option>
-          <option value="other">Other / Trendy</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field" style="grid-column: 1 / -1;">
         <label for="yearsProfitable">Years the business has been profitable</label>
         <select id="yearsProfitable">
           <option value="5">5 or more</option>
@@ -327,14 +342,6 @@
           <option value="2">2</option>
           <option value="1">1</option>
           <option value="0">Less than 1</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="customerConc">Largest customer = % of revenue</label>
-        <select id="customerConc">
-          <option value="low">Under 10%</option>
-          <option value="med">10–20%</option>
-          <option value="high">Over 20%</option>
         </select>
       </div>
     </div>
@@ -355,16 +362,6 @@
       <div class="field">
         <label for="w2">Current W-2 income (annual)</label>
         <input type="number" id="w2" placeholder="$150,000" />
-      </div>
-      <div class="field">
-        <label for="savings">Liquid savings available</label>
-        <input type="number" id="savings" placeholder="$250,000" />
-        <div class="hint">Cash, brokerage, and retirement (retirement counts at ~60–80%).</div>
-      </div>
-      <div class="field">
-        <label for="existingDebt">Existing monthly debt payments</label>
-        <input type="number" id="existingDebt" placeholder="$2,500" />
-        <div class="hint">Mortgage, car, credit cards, student loans — what you already pay monthly.</div>
       </div>
       <div class="field">
         <label for="expMgmt">Management experience</label>
@@ -398,6 +395,18 @@
   <section class="card">
     <div class="section-head">The Capital Stack</div>
     <div class="row">
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="financingStructure">Preferred financing structure</label>
+        <select id="financingStructure">
+          <option value="sba_only">SBA 7(a) + my down payment only</option>
+          <option value="sba_seller">SBA 7(a) + seller financing</option>
+          <option value="sba_investor">SBA 7(a) + outside investor(s)</option>
+          <option value="sba_combo">SBA 7(a) + seller financing + outside investor(s)</option>
+          <option value="express">SBA 7(a) Express (under $500K, faster close)</option>
+          <option value="unsure">Not sure yet — need guidance</option>
+        </select>
+        <div class="hint">Tells us how you're thinking about structuring the capital stack.</div>
+      </div>
       <div class="field">
         <label for="downPayment">Your cash down payment</label>
         <input type="number" id="downPayment" placeholder="$200,000" />
@@ -405,7 +414,7 @@
       <div class="field">
         <label for="sellerFinance">Seller financing on the table</label>
         <input type="number" id="sellerFinance" placeholder="$100,000" />
-        <div class="hint">If the seller has agreed to carry a note. Enter 0 if no seller financing.</div>
+        <div class="hint">If the seller has agreed to carry a note. Enter 0 if none.</div>
       </div>
       <div class="field" style="grid-column: 1 / -1;">
         <label for="outsideCapital">Outside investor capital (optional)</label>
@@ -498,7 +507,7 @@
   const $ = (id) => document.getElementById(id);
 
   // Required-field check before email gate
-  const required = ['purchase', 'sde', 'w2', 'savings', 'downPayment'];
+  const required = ['purchase', 'sde', 'w2', 'downPayment'];
 
   $('checkDeal').addEventListener('click', () => {
     const missing = required.some((id) => !Number($(id).value));
@@ -559,9 +568,9 @@
       content: urlParams.get('utm_content') || '',
     };
     const inputs = {};
-    ['purchase','sde','industry','yearsProfitable','customerConc',
-     'credit','w2','savings','existingDebt','expMgmt','industryMatch','operator',
-     'downPayment','sellerFinance','outsideCapital'].forEach((id) => {
+    ['purchase','sde','industry','yearsProfitable',
+     'credit','w2','expMgmt','industryMatch','operator',
+     'financingStructure','downPayment','sellerFinance','outsideCapital'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) inputs[id] = el.value;
     });
@@ -595,14 +604,12 @@
     const sde = Number($('sde').value);
     const industry = $('industry').value;
     const yearsProfitable = parseInt($('yearsProfitable').value, 10);
-    const customerConc = $('customerConc').value;
     const credit = $('credit').value;
     const w2 = Number($('w2').value);
-    const savings = Number($('savings').value);
-    const existingDebt = Number($('existingDebt').value) || 0;
     const expMgmt = parseInt($('expMgmt').value, 10);
     const industryMatch = $('industryMatch').value;
     const operator = $('operator').value;
+    const financingStructure = $('financingStructure').value;
     const downPayment = Number($('downPayment').value);
     const sellerFinance = Number($('sellerFinance').value) || 0;
     const outsideCapital = Number($('outsideCapital').value) || 0;
@@ -616,7 +623,7 @@
     const equityPct = buyerEquity / totalProjectCost;
     const sbaLoanNeeded = Math.max(0, totalProjectCost - buyerEquity - sellerFinance);
 
-    // Debt service estimate. 10-year SBA 7(a) at ~11.5% (prime+2.75 typical for loans >$350K) = ~$13,100/yr per $100K.
+    // Debt service estimate. 10-year SBA 7(a) at ~11.5% (prime+2.75 typical for loans >$350K).
     // Rough formula: annual payment ≈ loan * 0.1405 (10yr at 11.5% fully amortizing).
     const annualDebtService = sbaLoanNeeded * 0.1405;
 
@@ -627,14 +634,6 @@
 
     // SDE valuation multiple (sanity check on price).
     const sdeMultiple = sde > 0 ? purchase / sde : 0;
-
-    // Debt-to-income check.
-    const newMonthlyDebt = annualDebtService / 12;
-    const dti = w2 > 0 ? ((existingDebt * 12) + annualDebtService) / w2 : 999;
-
-    // Post-close liquid reserves (after down payment).
-    const postCloseReserves = savings - downPayment;
-    const reservesPct = postCloseReserves / purchase;
 
     const flags = [];
     let verdict = 'green';
@@ -703,17 +702,6 @@
       flags.push(['ok', 'W-2 income of ' + fmt(w2) + ' — meets the $100K benchmark lenders like to see.']);
     }
 
-    // Debt-to-income
-    if (w2 > 0 && dti > 0.45) {
-      flags.push(['bad', 'Total debt-to-income of ' + pct(dti) + ' (existing debt + new SBA payment) — above the 40–45% ceiling.',
-        'Pay down personal debt (credit cards, auto loans) before applying. Every $500/mo of payments cleared frees up real DTI headroom.']);
-      verdict = 'red';
-    } else if (w2 > 0 && dti > 0.40) {
-      flags.push(['warn', 'Total debt-to-income of ' + pct(dti) + ' — right at the ceiling most lenders accept.',
-        'Clear any non-essential personal debt before the SBA package goes to underwriting.']);
-      if (verdict === 'green') verdict = 'amber';
-    }
-
     // Management experience + industry match + operating partner
     if (expMgmt === 0) {
       flags.push(['bad', 'No management experience — SBA lenders want to see you can actually run a business.',
@@ -752,42 +740,19 @@
       flags.push(['ok', yearsProfitable + '+ years profitable — solid track record for SBA underwriting.']);
     }
 
-    // Industry
-    const industryTier = {
-      home_services: 'prime', healthcare: 'prime', commercial: 'prime',
-      franchise: 'good', manufacturing: 'good', professional: 'good',
-      retail: 'cautious', restaurant: 'cautious', other: 'cautious'
+    // Industry — informational only, doesn't affect verdict.
+    const industryCopy = {
+      home_services: 'Home services — recurring demand, sticky customers, SBA lenders love this category.',
+      healthcare: 'Healthcare — recession-resistant, loyal patient bases, regulatory barriers work in your favor.',
+      commercial: 'Commercial services — long-term contracts, sticky revenue, lenders are comfortable.',
+      franchise: 'Approved franchise — lender already trusts the model. Watch franchise fees/royalties cutting into cash flow.',
+      manufacturing: 'Manufacturing / distribution — physical collateral, repeatable processes, high barriers to entry.',
+      professional: 'Professional services — stable client relationships, typically asset-light but recurring.',
+      retail: 'Retail / e-commerce — margins and inventory turn are the key lender questions.',
+      restaurant: 'Restaurant / food service — a tougher credit box for SBA, but absolutely fundable with strong financials and cash flow.',
     }[industry];
-    if (industryTier === 'cautious') {
-      flags.push(['warn', 'Industry is a tougher credit box for SBA lenders (restaurants, trendy concepts, retail with tight margins).',
-        'Not a dealbreaker — but lenders will look harder at cash flow and customer stickiness. Expect a slower underwrite.']);
-      if (verdict === 'green') verdict = 'amber';
-    } else if (industryTier === 'prime') {
-      flags.push(['ok', 'Industry is in the sweet spot for SBA approval — recurring demand, sticky customers, lenders are comfortable.']);
-    } else {
-      flags.push(['ok', 'Industry is lender-friendly with standard underwriting.']);
-    }
-
-    // Customer concentration
-    if (customerConc === 'high') {
-      flags.push(['warn', 'Customer concentration over 20% — if that client leaves, DSCR can collapse. Lenders flag this hard.',
-        'Build the downside scenario without that client and show it still clears 1.25 DSCR. Or negotiate the price down to reflect the risk.']);
-      if (verdict === 'green') verdict = 'amber';
-    } else if (customerConc === 'low') {
-      flags.push(['ok', 'Customer base is diversified — no concentration risk.']);
-    }
-
-    // Post-close reserves
-    if (postCloseReserves < 0) {
-      flags.push(['bad', 'Down payment exceeds your liquid savings — you would have zero reserves at closing.',
-        'SBA lenders want you to keep reserves after closing. Raise more capital, shrink the down payment, or walk.']);
-      verdict = 'red';
-    } else if (reservesPct < 0.10) {
-      flags.push(['warn', 'Post-close liquid reserves of ' + fmt(postCloseReserves) + ' (' + pct(reservesPct) + ' of purchase) — thin cushion.',
-        'Aim for 20–25% of purchase price in reserves after closing. Retirement accounts count at 60–80% of balance toward this.']);
-      if (verdict === 'green') verdict = 'amber';
-    } else {
-      flags.push(['ok', 'Post-close reserves of ' + fmt(postCloseReserves) + ' (' + pct(reservesPct) + ' of purchase) — healthy position.']);
+    if (industryCopy) {
+      flags.push(['ok', industryCopy]);
     }
 
     // SDE multiple sanity check
