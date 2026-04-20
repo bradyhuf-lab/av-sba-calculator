@@ -546,7 +546,9 @@
     if (!firstName || !lastName) { alert('Please enter your first and last name.'); return; }
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email to see your result.'); return; }
 
-    const lead = collectLeadPayload({ firstName, lastName, email, phone, timeline });
+    // Compute result BEFORE sending the lead so the verdict is part of the payload.
+    const result = computeResult();
+    const lead = collectLeadPayload({ firstName, lastName, email, phone, timeline, result });
 
     try {
       fetch(LEAD_ENDPOINT, {
@@ -561,13 +563,13 @@
       localStorage.setItem('av_leads', JSON.stringify(stored));
     } catch (e) {}
 
-    runCalculator();
+    renderResult(result);
     $('step-email').style.display = 'none';
     $('step-result').style.display = 'block';
     $('step-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  function collectLeadPayload({ firstName, lastName, email, phone, timeline }) {
+  function collectLeadPayload({ firstName, lastName, email, phone, timeline, result }) {
     const urlParams = new URLSearchParams(window.location.search);
     const utm = {
       source: urlParams.get('utm_source') || '',
@@ -582,9 +584,18 @@
       const el = document.getElementById(id);
       if (el) inputs[id] = el.value;
     });
+    const verdictLabel = {
+      green: 'Likely Approved',
+      amber: 'Fundable With Work',
+      red: 'Needs Restructure',
+    }[result && result.verdict] || 'Unknown';
     return {
-      _subject: 'New AV SBA Calculator lead: ' + firstName + ' ' + lastName,
+      _subject: 'New AV SBA Calculator lead: ' + firstName + ' ' + lastName + ' (' + verdictLabel + ')',
+      _template: 'table',
       firstName, lastName, email, phone, timeline,
+      verdict: result ? result.verdict : null,
+      verdictLabel,
+      metrics: result ? result.metrics : null,
       inputs, utm,
       submittedAt: new Date().toISOString(),
       pageUrl: window.location.href,
@@ -607,7 +618,7 @@
   //   - Industry tiers (Best Types Of Businesses to Buy)
   //   - Seller financing standby rule (Script 1 Seller Financing)
   // Open questions for Josh: exact DSCR tiers, industry-by-industry LTV, approved franchise list.
-  function runCalculator() {
+  function computeResult() {
     const purchase = Number($('purchase').value);
     const sde = Number($('sde').value);
     const industry = $('industry').value;
@@ -777,8 +788,8 @@
       }
     }
 
-    // Render
-    renderResult({
+    // Return the structured result — caller decides when to render and what to send in the lead.
+    return {
       verdict,
       metrics: [
         ['SBA loan needed', fmt(sbaLoanNeeded)],
@@ -787,7 +798,7 @@
         ['SDE multiple', sdeMultiple > 0 ? sdeMultiple.toFixed(1) + 'x' : '—'],
       ],
       flags,
-    });
+    };
   }
 
   function renderResult({ verdict, metrics, flags }) {
