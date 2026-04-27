@@ -677,7 +677,7 @@
         <p>We may update this Privacy Policy from time to time. The "Effective Date" at the top of this Policy reflects the most recent revision. Material changes will be communicated through the Services or by email when reasonably possible.</p>
 
         <h4>12. Contact Us</h4>
-        <p>Questions about this Policy or our privacy practices: <a href="mailto:hello@acquisitionvault.com">hello@acquisitionvault.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
+        <p>Questions about this Policy or our privacy practices: <a href="mailto:joshuaekim1@gmail.com">joshuaekim1@gmail.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
       </div>
     </details>
 
@@ -732,13 +732,13 @@
         <p>We may modify, suspend, or discontinue the Services at any time without notice or liability. We may revise these Terms by updating this page and changing the Effective Date. Continued use of the Services after a revision constitutes acceptance of the revised Terms.</p>
 
         <h4>13. Governing Law and Dispute Resolution</h4>
-        <p>These Terms are governed by the laws of the state in which Acquisition Vault is registered, without regard to conflict of laws principles. Any dispute arising out of or relating to these Terms or the Services will be resolved in the state or federal courts located in that jurisdiction, and you consent to personal jurisdiction and venue in those courts.</p>
+        <p>These Terms are governed by the laws of the State of Florida, without regard to conflict of laws principles. Any dispute arising out of or relating to these Terms or the Services will be resolved in the state or federal courts located in Florida, and you consent to personal jurisdiction and venue in those courts.</p>
 
         <h4>14. Severability and Entire Agreement</h4>
         <p>If any provision of these Terms is held unenforceable, that provision will be enforced to the maximum extent permissible and the remaining provisions will remain in full force and effect. These Terms, together with the Privacy Policy, constitute the entire agreement between you and Acquisition Vault regarding the Services.</p>
 
         <h4>15. Contact</h4>
-        <p>Questions about these Terms: <a href="mailto:hello@acquisitionvault.com">hello@acquisitionvault.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
+        <p>Questions about these Terms: <a href="mailto:joshuaekim1@gmail.com">joshuaekim1@gmail.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
       </div>
     </details>
 
@@ -766,10 +766,13 @@
     $('step-email').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  // Lead capture endpoint — swap for the real CRM webhook once configured.
-  // Formsubmit forwards submissions to the destination email with zero setup.
-  // First submission requires one-time confirmation click in the inbox.
-  const LEAD_ENDPOINT = 'https://formsubmit.co/ajax/bradyhuf@gmail.com';
+  // Lead capture endpoint.
+  // Primary: joshuaekim1@gmail.com (Josh / Acquisition Vault — confirmed Apr 2026)
+  // CC: brady@huf.media (via _cc field in the payload)
+  // First submission to a new Formsubmit endpoint requires a one-time confirmation
+  // click in the primary inbox (standard Formsubmit activation step).
+  // TODO: Swap for GHL/iClosed webhook once Josh sends the URL.
+  const LEAD_ENDPOINT = 'https://formsubmit.co/ajax/joshuaekim1@gmail.com';
 
   $('showResult').addEventListener('click', () => {
     const email = $('email').value.trim();
@@ -827,6 +830,7 @@
     }[result && result.verdict] || 'Unknown';
     return {
       _subject: 'New AV SBA Calculator lead: ' + firstName + ' ' + lastName + ' (' + verdictLabel + ')',
+      _cc: 'brady@huf.media',
       _template: 'table',
       firstName, lastName, email, phone, timeline,
       verdict: result ? result.verdict : null,
