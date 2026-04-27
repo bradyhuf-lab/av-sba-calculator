@@ -337,6 +337,42 @@
   footer .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
   footer .disclaimer { font-size: 11px; color: var(--gray); }
   footer .disclaimer p { margin: 0 0 8px 0; }
+  footer details { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+  footer details summary {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 4px 0;
+    list-style: none;
+  }
+  footer details summary::-webkit-details-marker { display: none; }
+  footer details summary::before { content: '▸ '; font-size: 10px; color: var(--gray); }
+  footer details[open] summary::before { content: '▾ '; }
+  footer details .policy-body {
+    font-size: 11px;
+    color: var(--light);
+    line-height: 1.55;
+    margin-top: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  footer details .policy-body h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--gold);
+    margin: 12px 0 4px 0;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  footer details .policy-body p { margin: 0 0 8px 0; }
+  footer details .policy-body ul { margin: 0 0 8px 18px; padding: 0; }
+  footer details .policy-body li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -567,10 +603,146 @@
       <div><a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a></div>
     </div>
     <div class="disclaimer">
-      <p>This calculator is for informational purposes only and does not constitute a loan commitment, guarantee of approval, or the practice of law or accounting. Actual SBA approval depends on full underwriting by an SBA Preferred Lender, verified financials, credit report review, Quality of Earnings analysis, and current SBA SOP guidelines. Results shown are estimates based on the inputs provided and publicly stated SBA 7(a) program guidelines — actual terms and approvals may vary.</p>
-      <p>Acquisition Vault is a buy-side advisory firm. We are not an SBA lender, broker-dealer, law firm, or accounting firm. We connect qualified buyers with SBA Preferred Lenders and coordinate deal preparation services. Nothing on this page constitutes investment advice, legal advice, or tax advice.</p>
+      <p>This calculator is for informational purposes only and does not constitute a loan commitment, guarantee of approval, or the practice of law, accounting, tax, or financial advisory services. Actual SBA approval depends on full underwriting by an SBA Preferred Lender, verified financials, credit report review, Quality of Earnings analysis, and current SBA SOP guidelines. Results shown are estimates based on the inputs provided and publicly stated SBA 7(a) program guidelines; actual terms and approvals may vary.</p>
+      <p>Acquisition Vault is a buy-side advisory firm. We are not an SBA lender, broker-dealer, law firm, accounting firm, registered investment advisor, or affiliated with the U.S. Small Business Administration. We connect qualified buyers with SBA Preferred Lenders and coordinate deal preparation services. Nothing on this page constitutes investment advice, legal advice, or tax advice.</p>
+      <p>Past results, including any deals referenced in our content, do not guarantee future outcomes. Every business acquisition involves risk of partial or total loss of capital. Borrowers should consult with their own qualified legal, tax, and financial advisors before pursuing any acquisition.</p>
       <p>By entering a phone number you consent to receive SMS communication from Acquisition Vault regarding your inquiry. Message and data rates may apply. Message frequency varies. Reply STOP to opt out or HELP for help. Consent is not a condition of any service.</p>
     </div>
+
+    <details>
+      <summary>Privacy Policy</summary>
+      <div class="policy-body">
+        <p><strong>Effective Date: April 21, 2026</strong></p>
+        <p>Your privacy matters to us. This Privacy Policy describes how Acquisition Vault ("Acquisition Vault," "we," "us," or "our") collects, uses, and protects information from visitors to our website and users of the SBA Loan Approval Calculator (the "Calculator") at https://bradyhuf-lab.github.io/av-sba-calculator/ and acquisitionvault.com (collectively, the "Services"). By using the Services, you agree to the practices described here.</p>
+
+        <h4>1. Information We Collect</h4>
+        <p><strong>Information you provide directly.</strong> When you use the Calculator or contact us, we may collect:</p>
+        <ul>
+          <li>Name, email address, and (optional) phone number</li>
+          <li>Information about a business acquisition deal you are evaluating, including purchase price, cash flow, projected loan structure, industry, and other financial inputs</li>
+          <li>Personal qualifying information you provide (credit score range, income range, management experience, citizenship eligibility confirmation)</li>
+          <li>Timeline, intent, and any other voluntary details you submit through forms or messages</li>
+        </ul>
+        <p><strong>Information collected automatically.</strong> We collect standard technical data when you visit the Services, including IP address, browser type and version, device type, operating system, referring URL, pages viewed, the dates and times of your visits, and approximate location derived from your IP address.</p>
+        <p><strong>UTM and tracking parameters.</strong> We capture URL parameters (utm_source, utm_medium, utm_campaign, utm_content) to understand which content drove your visit.</p>
+        <p><strong>Browser storage.</strong> The Calculator may use browser localStorage to retain a backup copy of your most recent submission on your device. This data does not leave your browser unless you submit the form. We do not currently use third-party advertising cookies on the Calculator. We may add web analytics cookies in the future and will update this Policy if we do.</p>
+
+        <h4>2. How We Use Your Information</h4>
+        <ul>
+          <li>To deliver the Calculator result and any follow-up information you request</li>
+          <li>To match you with SBA Preferred Lenders and other professionals appropriate to your deal</li>
+          <li>To respond to your inquiries, schedule strategy calls, and provide our advisory services</li>
+          <li>To send transactional and (with your consent) promotional communications by email or SMS</li>
+          <li>To analyze and improve the Services, our content, and our outreach</li>
+          <li>To comply with legal obligations and protect our rights</li>
+        </ul>
+
+        <h4>3. How We Share Your Information</h4>
+        <p>We do not sell your personal information. We share information only as described below:</p>
+        <ul>
+          <li><strong>SBA Preferred Lenders and deal partners.</strong> If you ask us to match you with a lender or advisor, we will share the deal information you provide with the lender(s) or advisors most likely to fund or assist with your transaction.</li>
+          <li><strong>Service providers.</strong> We use third-party tools to operate our business, including customer relationship management software (e.g., GoHighLevel), email and SMS providers, hosting providers, and analytics tools. These vendors process information on our behalf under confidentiality and data-protection obligations.</li>
+          <li><strong>Legal and safety.</strong> We may disclose information when required by law, subpoena, or other legal process, or when we believe disclosure is necessary to protect our rights, your safety, or the safety of others, or to investigate fraud or violations of our terms.</li>
+          <li><strong>Business transactions.</strong> If Acquisition Vault is involved in a merger, acquisition, financing, or sale of assets, your information may be transferred as part of that transaction, subject to standard confidentiality protections.</li>
+        </ul>
+
+        <h4>4. SMS and Email Communications</h4>
+        <p>When you provide a phone number, you consent to receive transactional and marketing SMS messages from Acquisition Vault. Message frequency varies. Message and data rates may apply. Reply STOP at any time to unsubscribe, or HELP for assistance. Consent is not a condition of any service we provide. You may opt out of marketing emails at any time using the unsubscribe link in any marketing message.</p>
+
+        <h4>5. Your Choices and Rights</h4>
+        <ul>
+          <li><strong>Access and correction.</strong> You may request a copy of the personal information we hold about you and ask us to correct inaccuracies.</li>
+          <li><strong>Deletion.</strong> You may ask us to delete your personal information, subject to retention obligations under applicable law.</li>
+          <li><strong>Opt-out.</strong> You may unsubscribe from marketing emails or SMS at any time using the methods described above.</li>
+          <li><strong>State-specific rights.</strong> If you are a resident of California, Colorado, Connecticut, Virginia, or another state with comprehensive privacy legislation, you may have additional rights including the right to know, correct, delete, opt out of "sales" or "sharing" of personal information, and not be discriminated against for exercising these rights. We do not sell personal information for monetary consideration.</li>
+        </ul>
+        <p>To exercise any of these rights, contact us at the email below.</p>
+
+        <h4>6. Children's Privacy</h4>
+        <p>The Services are not directed to children under 18 and are intended only for adult business buyers. We do not knowingly collect personal information from anyone under 18. If you believe a child has submitted information to us, please contact us so we can delete it.</p>
+
+        <h4>7. Data Security</h4>
+        <p>We use commercially reasonable administrative, technical, and physical safeguards to protect personal information. No method of transmission over the internet or electronic storage is fully secure, however, and we cannot guarantee absolute security.</p>
+
+        <h4>8. Data Retention</h4>
+        <p>We retain personal information for as long as needed to provide the Services, comply with our legal obligations, resolve disputes, and enforce our agreements. When information is no longer needed, we delete or anonymize it.</p>
+
+        <h4>9. Third-Party Links</h4>
+        <p>The Services may link to third-party websites we do not control. We are not responsible for the privacy practices of those sites. We encourage you to review the privacy policies of any third-party site you visit.</p>
+
+        <h4>10. International Visitors</h4>
+        <p>The Services are operated from the United States. If you access the Services from outside the U.S., your information will be processed in the United States, which may have different data protection laws than your country of residence.</p>
+
+        <h4>11. Changes to This Policy</h4>
+        <p>We may update this Privacy Policy from time to time. The "Effective Date" at the top of this Policy reflects the most recent revision. Material changes will be communicated through the Services or by email when reasonably possible.</p>
+
+        <h4>12. Contact Us</h4>
+        <p>Questions about this Policy or our privacy practices: <a href="mailto:hello@acquisitionvault.com">hello@acquisitionvault.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Terms of Service</summary>
+      <div class="policy-body">
+        <p><strong>Effective Date: April 21, 2026</strong></p>
+        <p>These Terms of Service ("Terms") govern your access to and use of the Acquisition Vault SBA Loan Approval Calculator at https://bradyhuf-lab.github.io/av-sba-calculator/, the website at acquisitionvault.com, and any related services we provide (collectively, the "Services"). By using the Services, you agree to these Terms. If you do not agree, do not use the Services.</p>
+
+        <h4>1. About Us</h4>
+        <p>Acquisition Vault is a buy-side advisory firm that helps business buyers prepare deal packages and connects them with SBA Preferred Lenders, accountants, attorneys, and other service providers. We are not a lender. We are not a broker-dealer or registered investment advisor. We are not a law firm, accounting firm, or tax advisor. We are not affiliated with the U.S. Small Business Administration. We do not originate, underwrite, fund, or guarantee any loan.</p>
+
+        <h4>2. The Calculator Is Informational Only</h4>
+        <p>The Calculator generates an estimated assessment of how an SBA 7(a) loan request might be evaluated, based on inputs you provide and publicly stated SBA 7(a) program guidelines. The Calculator output is informational only. It is not a loan commitment, pre-qualification, pre-approval, or guarantee that any lender will fund your transaction. Actual loan approval depends on full underwriting by a licensed SBA Preferred Lender and is subject to that lender's credit policies, current SBA Standard Operating Procedures, verified financials, Quality of Earnings analysis, third-party reports, and current capital market conditions. Numbers shown are estimates and may differ materially from any final lender decision or terms.</p>
+
+        <h4>3. No Financial, Legal, or Tax Advice</h4>
+        <p>Nothing on the Services constitutes financial, investment, legal, tax, or accounting advice. The Services are educational and informational. You should consult with your own qualified attorneys, accountants, financial advisors, and tax professionals before pursuing any business acquisition or signing any loan documents. Acquiring a business involves substantial financial and operational risk, including the risk of partial or total loss of capital.</p>
+
+        <h4>4. Eligibility</h4>
+        <p>You may use the Services only if you are at least 18 years old and have the legal capacity to enter into binding contracts. By using the Services you represent that you meet these requirements and that any information you provide is accurate and complete to the best of your knowledge.</p>
+
+        <h4>5. Use License and Restrictions</h4>
+        <p>We grant you a limited, non-exclusive, non-transferable, revocable license to use the Services for personal, non-commercial evaluation of your own business acquisition. You may not:</p>
+        <ul>
+          <li>Copy, modify, distribute, sell, or sublicense any part of the Services</li>
+          <li>Use the Services for any commercial purpose other than evaluating your own deal</li>
+          <li>Reverse engineer, decompile, or attempt to derive the source code of any non-public portion of the Services</li>
+          <li>Use automated tools (bots, scrapers, harvesters) to access the Services or extract data</li>
+          <li>Misrepresent your identity, eligibility, or financial information</li>
+          <li>Use the Services in violation of any law, regulation, or third-party right</li>
+        </ul>
+
+        <h4>6. User-Submitted Information</h4>
+        <p>You are responsible for the accuracy and completeness of any information you submit. You authorize us to use that information consistent with our Privacy Policy, including sharing relevant deal information with SBA Preferred Lenders or other service providers when you ask us to match you. You acknowledge that misstatements on a loan application may carry civil and criminal penalties under federal law.</p>
+
+        <h4>7. SMS and Email Consent</h4>
+        <p>By submitting your phone number through the Services, you expressly consent to receive transactional and marketing SMS messages from Acquisition Vault. Reply STOP to opt out at any time. Reply HELP for assistance. Message and data rates may apply. Message frequency varies. Consent is not a condition of any service. By submitting your email, you consent to receive transactional emails and may opt out of marketing emails at any time.</p>
+
+        <h4>8. Disclaimer of Warranties</h4>
+        <p>The Services are provided on an "as is" and "as available" basis without warranties of any kind, express or implied. To the maximum extent permitted by law, Acquisition Vault disclaims all warranties, including warranties of merchantability, fitness for a particular purpose, non-infringement, accuracy, completeness, reliability, and uninterrupted or error-free operation. We do not warrant that the Services will meet your requirements, that any specific lender will fund your deal, or that any specific outcome will occur.</p>
+
+        <h4>9. Limitation of Liability</h4>
+        <p>To the maximum extent permitted by law, in no event will Acquisition Vault, its owners, employees, contractors, or agents be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, including loss of profits, loss of data, loss of goodwill, business interruption, or cost of substitute services, arising out of or relating to your use of or inability to use the Services, even if we have been advised of the possibility of such damages. Our total cumulative liability arising out of or relating to the Services will not exceed one hundred U.S. dollars ($100). Some jurisdictions do not allow the limitation or exclusion of certain warranties or damages, so some of the above may not apply to you.</p>
+
+        <h4>10. Indemnification</h4>
+        <p>You agree to indemnify, defend, and hold harmless Acquisition Vault and its owners, employees, contractors, and agents from any claim, demand, loss, liability, or expense (including reasonable attorneys' fees) arising from your use of the Services, your violation of these Terms, your violation of any law or third-party right, or any inaccurate information you submit.</p>
+
+        <h4>11. Third-Party Services</h4>
+        <p>The Services may include links to or integrations with third-party services such as SBA Preferred Lenders, calendar booking tools, CRM platforms, accounting firms, and law firms. We are not responsible for the practices, content, or terms of any third-party service. Your interactions with third parties are governed by their own terms and policies.</p>
+
+        <h4>12. Modifications to the Services and Terms</h4>
+        <p>We may modify, suspend, or discontinue the Services at any time without notice or liability. We may revise these Terms by updating this page and changing the Effective Date. Continued use of the Services after a revision constitutes acceptance of the revised Terms.</p>
+
+        <h4>13. Governing Law and Dispute Resolution</h4>
+        <p>These Terms are governed by the laws of the state in which Acquisition Vault is registered, without regard to conflict of laws principles. Any dispute arising out of or relating to these Terms or the Services will be resolved in the state or federal courts located in that jurisdiction, and you consent to personal jurisdiction and venue in those courts.</p>
+
+        <h4>14. Severability and Entire Agreement</h4>
+        <p>If any provision of these Terms is held unenforceable, that provision will be enforced to the maximum extent permissible and the remaining provisions will remain in full force and effect. These Terms, together with the Privacy Policy, constitute the entire agreement between you and Acquisition Vault regarding the Services.</p>
+
+        <h4>15. Contact</h4>
+        <p>Questions about these Terms: <a href="mailto:hello@acquisitionvault.com">hello@acquisitionvault.com</a> or via the contact form at <a href="https://acquisitionvault.com" target="_blank" rel="noopener">acquisitionvault.com</a>.</p>
+      </div>
+    </details>
+
+    <div style="margin-top: 20px; font-size: 11px; color: var(--gray);">© 2026 Acquisition Vault. All rights reserved.</div>
   </footer>
 </div>
 
