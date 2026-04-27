@@ -127,6 +127,54 @@
 
   .hint { font-size: 12px; color: var(--gray); margin-top: 6px; line-height: 1.4; }
 
+  .citizen-gate {
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--navy3);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .citizen-label {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--light);
+    line-height: 1.45;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    margin: 0;
+  }
+  .citizen-label input[type="checkbox"] {
+    margin: 2px 0 0 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .lender-hint {
+    margin-top: 24px;
+    padding: 18px;
+    background: var(--navy3);
+    border-left: 3px solid var(--gold);
+    font-size: 14px;
+    color: var(--light);
+    line-height: 1.5;
+  }
+  .lender-hint .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+  }
+
   .btn {
     appearance: none;
     border: 2px solid var(--red);
@@ -339,7 +387,11 @@
           <option value="retail">Retail / E-Commerce</option>
           <option value="restaurant">Restaurant / Food Service</option>
           <option value="other">Other</option>
+          <option value="disqualified_adult">Adult entertainment</option>
+          <option value="disqualified_gambling">Gambling</option>
+          <option value="disqualified_lobbying">Lobbying / political advocacy</option>
         </select>
+        <div class="hint">SBA 7(a) ineligible industries are flagged automatically.</div>
       </div>
       <div class="field" style="grid-column: 1 / -1;">
         <label for="yearsProfitable">Years the business has been profitable</label>
@@ -363,8 +415,8 @@
         <select id="credit">
           <option value="high">720+</option>
           <option value="mid">680 – 719</option>
-          <option value="low">640 – 679</option>
-          <option value="bad">Below 640</option>
+          <option value="low">650 – 679</option>
+          <option value="bad">Below 650</option>
         </select>
       </div>
       <div class="field">
@@ -430,7 +482,13 @@
         <div class="hint">From a partner or HNW investor. Must be treated as equity, not debt.</div>
       </div>
     </div>
-    <div style="margin-top: 28px;">
+    <div class="citizen-gate">
+      <label class="citizen-label">
+        <input type="checkbox" id="citizenConfirm" />
+        <span>I confirm all owners and employees of this business are U.S. citizens or legal permanent residents. (Required for SBA 7(a) eligibility.)</span>
+      </label>
+    </div>
+    <div style="margin-top: 24px;">
       <button class="btn" id="checkDeal">Check my deal</button>
       <div class="micro">Instant result. No credit pull. No application fee.</div>
     </div>
@@ -489,6 +547,11 @@
       </div>
 
       <ul class="flags" id="flagList"></ul>
+
+      <div class="lender-hint" id="lenderHint" style="display:none;">
+        <span class="label">Lender match</span>
+        <span id="lenderHintText"></span>
+      </div>
     </div>
 
     <div class="cta-final">
@@ -506,7 +569,7 @@
     <div class="disclaimer">
       <p>This calculator is for informational purposes only and does not constitute a loan commitment, guarantee of approval, or the practice of law or accounting. Actual SBA approval depends on full underwriting by an SBA Preferred Lender, verified financials, credit report review, Quality of Earnings analysis, and current SBA SOP guidelines. Results shown are estimates based on the inputs provided and publicly stated SBA 7(a) program guidelines — actual terms and approvals may vary.</p>
       <p>Acquisition Vault is a buy-side advisory firm. We are not an SBA lender, broker-dealer, law firm, or accounting firm. We connect qualified buyers with SBA Preferred Lenders and coordinate deal preparation services. Nothing on this page constitutes investment advice, legal advice, or tax advice.</p>
-      <p>By entering a phone number you consent to receive SMS communication from Acquisition Vault regarding your inquiry. Message and data rates may apply. Message frequency varies. Reply STOP to opt out or HELP for help. Consent is not a condition of any service. See our <a href="https://acquisitionvault.com" target="_blank" rel="noopener">privacy policy</a>.</p>
+      <p>By entering a phone number you consent to receive SMS communication from Acquisition Vault regarding your inquiry. Message and data rates may apply. Message frequency varies. Reply STOP to opt out or HELP for help. Consent is not a condition of any service.</p>
     </div>
   </footer>
 </div>
@@ -584,9 +647,10 @@
       const el = document.getElementById(id);
       if (el) inputs[id] = el.value;
     });
+    inputs.citizenConfirmed = $('citizenConfirm').checked ? 'yes' : 'no';
     const verdictLabel = {
-      green: 'Likely Approved',
-      amber: 'Fundable With Work',
+      green: 'Strong SBA Profile',
+      amber: 'Workable With Adjustments',
       red: 'Needs Restructure',
     }[result && result.verdict] || 'Unknown';
     return {
@@ -606,18 +670,18 @@
   const pct = (n) => (n * 100).toFixed(1) + '%';
 
   // ---------- SBA 7(a) approval calculator ----------
-  // Numbers sourced from Josh Kim's own scripts on the Acquisition Vault channel:
-  //   - Min FICO ~640, 680+ preferred (Credit Score SBA Loan script)
-  //   - Min equity injection 10%, 20–25% preferred (multiple scripts)
-  //   - DSCR minimum 1.25, some lenders 1.35 (How To Value A Business, Easy Method)
-  //   - W-2 $100K+ baseline, 5+ yrs mgmt exp preferred (Easy Method script)
-  //   - SBA 7(a) cap $5M, loans 7–10 years (2026 SBA rules script)
-  //   - Business stable 2+ years (Best Types Of Businesses to Buy)
-  //   - Debt-to-income ceiling ~40–45% (10 SBA Loan Mistakes V2)
-  //   - Liquid reserves ~20–25% of purchase price (10 SBA Loan Mistakes V2)
-  //   - Industry tiers (Best Types Of Businesses to Buy)
-  //   - Seller financing standby rule (Script 1 Seller Financing)
-  // Open questions for Josh: exact DSCR tiers, industry-by-industry LTV, approved franchise list.
+  // Numbers sourced from Josh Kim's own scripts plus his direct answers (April 2026):
+  //   - DSCR: 1.25 floor, 1.5+ recommended target (Josh: "1.25 might get approved but you should target 1.5x or higher")
+  //   - Credit: 650 hard floor (Josh: "anything below 650 is going to be a lender decline"), 680+ preferred
+  //   - Min loan size: $250K rough floor, many lenders won't touch below $350K (Josh's direct guidance)
+  //   - $2M+ uncollateralized: scrutiny escalates (Josh: "first deal, shoot for below $2M")
+  //   - SBA 7(a) cap: $5M
+  //   - Equity injection: 10% min, 20–25% preferred
+  //   - Citizenship: hard stop if any owner/employee isn't U.S. citizen or LPR (Josh: "this is a hard stop")
+  //   - Industry: SBA-ineligible categories (adult entertainment, gambling, lobbying) auto-decline
+  //   - W-2: $100K target but soft (Josh: "wouldn't disqualify if borrower has the requisite experience")
+  //   - Business stable 2+ years
+  //   - Seller staying ≤ 12 months as consultant (SBA rule)
   function computeResult() {
     const purchase = Number($('purchase').value);
     const sde = Number($('sde').value);
@@ -658,10 +722,48 @@
     let verdict = 'green';
 
     // ---- HARD STOPS ----
-    if (sbaLoanNeeded > 5000000) {
-      flags.push(['bad', 'SBA loan needed is ' + fmt(sbaLoanNeeded) + ' — over the $5M SBA 7(a) cap.',
-        'Either bring more equity/seller financing to get the SBA portion under $5M, or explore alternatives like a pari passu second (SBA 504 + conventional).']);
+
+    // Citizenship gate (Josh confirmed this is a hard stop).
+    const citizenConfirmed = $('citizenConfirm').checked;
+    if (!citizenConfirmed) {
+      flags.push(['bad', 'Citizenship requirement not confirmed. SBA 7(a) requires all owners and employees to be U.S. citizens or legal permanent residents.',
+        'Confirm the eligibility checkbox before submission. If any owner or employee does not meet this requirement, the entire business is SBA-ineligible.']);
       verdict = 'red';
+    }
+
+    // Industry disqualifier (SBA-ineligible categories per Josh's guidance).
+    const disqualifiedIndustries = ['disqualified_adult', 'disqualified_gambling', 'disqualified_lobbying'];
+    if (disqualifiedIndustries.includes(industry)) {
+      const labels = {
+        disqualified_adult: 'adult entertainment',
+        disqualified_gambling: 'gambling',
+        disqualified_lobbying: 'lobbying / political advocacy',
+      };
+      flags.push(['bad', 'Selected industry (' + labels[industry] + ') is SBA-ineligible. SBA 7(a) cannot finance this category.',
+        'Look at conventional financing or alternative lenders if you want to acquire a business in this category.']);
+      verdict = 'red';
+    }
+
+    // SBA 7(a) program cap.
+    if (sbaLoanNeeded > 5000000) {
+      flags.push(['bad', 'SBA loan needed is ' + fmt(sbaLoanNeeded) + ', over the $5M SBA 7(a) program cap.',
+        'Bring more equity or seller financing to get the SBA portion under $5M, or look at a pari passu structure (SBA 504 + conventional).']);
+      verdict = 'red';
+    } else if (sbaLoanNeeded > 2000000) {
+      flags.push(['warn', 'SBA loan needed is ' + fmt(sbaLoanNeeded) + '. Once you go above $2M uncollateralized, underwriting scrutiny escalates significantly. Industry experience, post-close liquidity, and operating history all become much more important.',
+        'For a first SBA acquisition, Josh generally recommends targeting under $2M. If you go above, expect a slower process and tighter conditions.']);
+      if (verdict === 'green') verdict = 'amber';
+    }
+
+    // SBA loan size floor (Josh: $250K rough floor, $350K is where most lenders are comfortable).
+    if (sbaLoanNeeded > 0 && sbaLoanNeeded < 250000) {
+      flags.push(['bad', 'SBA loan needed is ' + fmt(sbaLoanNeeded) + ', below the practical SBA 7(a) acquisition floor of ~$250K.',
+        'Most lenders will not underwrite an acquisition loan this small. Look at a larger deal, an SBA microloan, or self-funding for one this small.']);
+      verdict = 'red';
+    } else if (sbaLoanNeeded > 0 && sbaLoanNeeded < 350000) {
+      flags.push(['warn', 'SBA loan of ' + fmt(sbaLoanNeeded) + ' is on the small side. Many SBA lenders will not touch acquisitions below $350K because the work to underwrite is similar regardless of deal size.',
+        'Consider a larger deal — same effort to underwrite, more upside. Josh: "might as well buy a bigger business for the same amount of effort."']);
+      if (verdict === 'green') verdict = 'amber';
     }
 
     if (equityPct < 0.10) {
@@ -676,49 +778,47 @@
       flags.push(['ok', 'Buyer equity at ' + pct(equityPct) + ' — comfortable position with most lenders.']);
     }
 
-    // DSCR
+    // DSCR — Josh's framing: 1.25 might get approved but 1.5+ is the real target so you have buffer.
     if (sbaLoanNeeded > 0) {
       if (dscr < 1.25) {
-        flags.push(['bad', 'Projected DSCR of ' + dscr.toFixed(2) + ' — below the 1.25 minimum most SBA lenders require.',
-          'Either lower the purchase price, bring more equity to shrink the loan, negotiate more seller financing on standby, or walk away if the cash flow does not cover the debt.']);
+        flags.push(['bad', 'Projected DSCR of ' + dscr.toFixed(2) + ' is below the 1.25 SBA approval floor.',
+          'Lower the purchase price, bring more equity to shrink the loan, push more seller financing onto standby, or walk away if cash flow cannot cover the debt.']);
         verdict = 'red';
-      } else if (dscr < 1.35) {
-        flags.push(['warn', 'Projected DSCR of ' + dscr.toFixed(2) + ' — meets the 1.25 floor but tight. Many lenders prefer 1.35+.',
-          'Negotiate the purchase price down, push more seller financing onto standby, or find a lender with a 1.25 credit box.']);
+      } else if (dscr < 1.50) {
+        flags.push(['warn', 'Projected DSCR of ' + dscr.toFixed(2) + '. Meets the 1.25 floor and will likely get approved, but Josh recommends targeting 1.5x or higher. Life happens, business happens, you want buffer for bumps in the road, especially on a first deal.',
+          'Negotiate the purchase price down, push more seller financing onto standby, or bring more equity to lift DSCR above 1.5x.']);
         if (verdict === 'green') verdict = 'amber';
       } else {
-        flags.push(['ok', 'Projected DSCR of ' + dscr.toFixed(2) + ' — strong. Business cash flow covers the debt with margin.']);
+        flags.push(['ok', 'Projected DSCR of ' + dscr.toFixed(2) + '. Strong. You have real buffer if revenue dips or expenses spike post-close.']);
       }
 
-      // Downside scenario: 25% revenue drop → DSCR stays above 1.0?
+      // Downside scenario: 25% revenue drop, DSCR stays above 1.0?
       const stressedDSCR = (adjustedCashFlow * 0.75) / annualDebtService;
       if (stressedDSCR < 1.0) {
-        flags.push(['warn', 'Stress test: if revenue drops 25%, DSCR falls to ' + stressedDSCR.toFixed(2) + ' — below 1.0. Lenders will flag this.',
-          'Build a downside scenario that still covers debt. Often means a lower purchase price or more seller financing.']);
+        flags.push(['warn', 'Stress test: if revenue drops 25%, DSCR falls to ' + stressedDSCR.toFixed(2) + ', below 1.0. Lenders will flag this and you will be in trouble fast if it actually happens.',
+          'Build a downside scenario that still clears 1.0. Usually means a lower purchase price or more seller financing.']);
         if (verdict === 'green') verdict = 'amber';
       }
     }
 
-    // Credit
+    // Credit — Josh: anything below 650 is a lender decline, target 680+.
     if (credit === 'bad') {
-      flags.push(['bad', 'Credit below 640 — most SBA preferred lenders decline at this score.',
-        'Pull your credit report, dispute errors, pay down revolving balances. Credit above 680 opens up most lenders.']);
+      flags.push(['bad', 'Credit below 650 is generally a lender decline on SBA acquisitions.',
+        'Pull your credit report, dispute errors, pay down revolving balances. Target 680+ before applying. Most lenders will not touch a sub-650 file.']);
       verdict = 'red';
     } else if (credit === 'low') {
-      flags.push(['warn', 'Credit 640–679 — fundable with the right lender, but some will decline. Expect a rate premium.',
-        'Push credit above 680 for access to the full lender pool and best pricing.']);
+      flags.push(['warn', 'Credit 650–679 is above the auto-decline floor but below the 680+ target. Some lenders will pass, others will price up.',
+        'Push credit above 680 for the full lender pool and best pricing.']);
       if (verdict === 'green') verdict = 'amber';
     } else {
-      flags.push(['ok', credit === 'high' ? 'Credit 720+ — top tier for SBA approval.' : 'Credit 680–719 — solid. Most preferred lenders are open.']);
+      flags.push(['ok', credit === 'high' ? 'Credit 720+ is top tier for SBA approval.' : 'Credit 680–719 is solid. Most preferred lenders are open.']);
     }
 
-    // W-2 income
+    // W-2 income — Josh: $100K is a target, not a hard floor. Strong experience can offset.
     if (w2 < 100000) {
-      flags.push(['warn', 'W-2 income of ' + fmt(w2) + ' — below the $100K benchmark lenders like to see as a safety net on the personal guarantee.',
-        'Fundable below $100K if the business cash flow is strong and reserves are solid — but expect more scrutiny.']);
-      if (verdict === 'green') verdict = 'amber';
+      flags.push(['ok', 'W-2 income of ' + fmt(w2) + ' is below the $100K target most lenders like to see as a safety net on the personal guarantee, but it is not a disqualifier on its own. Strong management experience and a good business can offset.']);
     } else {
-      flags.push(['ok', 'W-2 income of ' + fmt(w2) + ' — meets the $100K benchmark lenders like to see.']);
+      flags.push(['ok', 'W-2 income of ' + fmt(w2) + ' meets the $100K benchmark lenders like to see.']);
     }
 
     // Management experience + industry match + operating partner
@@ -788,7 +888,27 @@
       }
     }
 
-    // Return the structured result — caller decides when to render and what to send in the lead.
+    // Lender match hint — sales tool Josh asked for. Only show if the deal is fundable.
+    const industryHint = {
+      home_services: 'home services',
+      healthcare: 'healthcare',
+      commercial: 'commercial services',
+      franchise: 'franchise',
+      manufacturing: 'manufacturing and distribution',
+      professional: 'professional services',
+      retail: 'retail',
+      restaurant: 'food service',
+    }[industry] || 'small business acquisition';
+    let sizeHint;
+    if (sbaLoanNeeded < 500000) sizeHint = 'under $500K';
+    else if (sbaLoanNeeded < 1000000) sizeHint = '$500K to $1M';
+    else if (sbaLoanNeeded < 2000000) sizeHint = '$1M to $2M';
+    else if (sbaLoanNeeded <= 5000000) sizeHint = '$2M to $5M';
+    else sizeHint = 'over $5M';
+    const lenderHint = (verdict === 'red')
+      ? null
+      : 'Based on your numbers, this deal profile fits a ' + sizeHint + ' SBA preferred lender focused on ' + industryHint + '. We have direct relationships with lenders in this credit box. We can match you on the call.';
+
     return {
       verdict,
       metrics: [
@@ -798,23 +918,24 @@
         ['SDE multiple', sdeMultiple > 0 ? sdeMultiple.toFixed(1) + 'x' : '—'],
       ],
       flags,
+      lenderHint,
     };
   }
 
-  function renderResult({ verdict, metrics, flags }) {
+  function renderResult({ verdict, metrics, flags, lenderHint }) {
     const badge = $('resultBadge');
     const title = $('resultTitle');
     const summary = $('resultSummary');
 
     if (verdict === 'green') {
       badge.className = 'badge green';
-      badge.textContent = 'Likely Approved';
+      badge.textContent = 'Strong SBA Profile';
       title.textContent = 'Your deal fits the SBA box.';
-      summary.textContent = 'On paper, this is the kind of file a preferred SBA lender moves quickly on. Here is what to expect.';
+      summary.textContent = 'On paper, this is the kind of file a preferred SBA lender moves quickly on. Specifics worth talking through on a call.';
     } else if (verdict === 'amber') {
       badge.className = 'badge amber';
-      badge.textContent = 'Fundable With Work';
-      title.textContent = 'Your deal is workable — with a few adjustments.';
+      badge.textContent = 'Workable With Adjustments';
+      title.textContent = 'Your deal is workable with a few adjustments.';
       summary.textContent = 'There are items below that will shape your approval and your terms. None are dealbreakers on their own.';
     } else {
       badge.className = 'badge red';
@@ -839,6 +960,16 @@
       li.innerHTML = '<span class="dot ' + dotClass + '"></span><span>' + body + '</span>';
       list.appendChild(li);
     });
+
+    // Lender match hint (sales nudge to book a call).
+    const lenderHintEl = $('lenderHint');
+    const lenderHintText = $('lenderHintText');
+    if (lenderHint) {
+      lenderHintText.textContent = lenderHint;
+      lenderHintEl.style.display = 'block';
+    } else {
+      lenderHintEl.style.display = 'none';
+    }
   }
 
   function escapeHtml(s) {
