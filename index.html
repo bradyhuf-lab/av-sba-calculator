@@ -42,6 +42,8 @@
   }
 
   header { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-bottom: 56px; }
+  .logo-link { display: inline-block; line-height: 0; transition: opacity 120ms ease; }
+  .logo-link:hover { opacity: 0.85; }
   .logo-svg { width: 280px; max-width: 70%; height: auto; display: block; }
   .kicker {
     font-family: 'Barlow Condensed', sans-serif;
@@ -378,18 +380,20 @@
 <body>
 <div class="wrap">
   <header>
-    <svg class="logo-svg" viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Acquisition Vault">
-      <defs>
-        <style>
-          .word { font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; letter-spacing: 0.04em; }
-          .light { fill: #F4F4F2; }
-          .accent { fill: #C0392B; }
-        </style>
-      </defs>
-      <text x="20" y="110" class="word light" font-size="120">ACQUISITION</text>
-      <text x="20" y="215" class="word accent" font-size="120">VAULT</text>
-      <rect x="720" y="118" width="160" height="10" fill="#E8A020"/>
-    </svg>
+    <a href="https://acquisitionvault.com" class="logo-link" aria-label="Acquisition Vault homepage">
+      <svg class="logo-svg" viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Acquisition Vault">
+        <defs>
+          <style>
+            .word { font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; letter-spacing: 0.04em; }
+            .light { fill: #F4F4F2; }
+            .accent { fill: #C0392B; }
+          </style>
+        </defs>
+        <text x="20" y="110" class="word light" font-size="120">ACQUISITION</text>
+        <text x="20" y="215" class="word accent" font-size="120">VAULT</text>
+        <rect x="720" y="118" width="160" height="10" fill="#E8A020"/>
+      </svg>
+    </a>
     <div class="kicker">SBA 7(a) Deal Pre-Qualifier</div>
   </header>
 
